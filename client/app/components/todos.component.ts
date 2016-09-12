@@ -22,13 +22,12 @@ export class TodosComponent implements OnInit {
 		.subscribe(todos => this.todos = todos)
 	}
 	addTodo($event, todoText) {
-		if ($event.which === 1) {
+		if ($event.which === 1 || $event.which === 13) {
 			var result;
 			var newTodo = {
 				text: todoText.value,
 				isCompleted: false
 			};
-
 			result = this._todoService.saveTodo(newTodo);
 			result.subscribe(x => {
 				this.todos.push(newTodo);
@@ -67,10 +66,26 @@ export class TodosComponent implements OnInit {
 			};
 
 			this._todoService.updateTodo(_todo)
+				.map(res => res.json())
+				.subscribe(data => {
+					this.setEditState(todo, false);
+				});
+		}
+	}
+	deleteTodo(todo) {
+		let todos = this.todos;
+		this._todoService.deleteTodo(todo._id)
 			.map(res => res.json())
 			.subscribe(data => {
-				this.setEditState(todo, false);
+				if (data.n === 1) {
+					const filteredItem = todos.filter(t => {
+						return t._id === todo._id;
+					})[0];
+					console.log(filteredItem);
+					const i = todos.indexOf(filteredItem);
+					todos.splice(filteredItem, 1);
+					console.log(todos);
+				}
 			})
-		}
 	}
 }

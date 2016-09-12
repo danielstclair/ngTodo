@@ -26,7 +26,7 @@ var TodosComponent = (function () {
     };
     TodosComponent.prototype.addTodo = function ($event, todoText) {
         var _this = this;
-        if ($event.which === 1) {
+        if ($event.which === 1 || $event.which === 13) {
             var result;
             var newTodo = {
                 text: todoText.value,
@@ -75,6 +75,22 @@ var TodosComponent = (function () {
                 _this.setEditState(todo, false);
             });
         }
+    };
+    TodosComponent.prototype.deleteTodo = function (todo) {
+        var todos = this.todos;
+        this._todoService.deleteTodo(todo._id)
+            .map(function (res) { return res.json(); })
+            .subscribe(function (data) {
+            if (data.n === 1) {
+                var filteredItem = todos.filter(function (t) {
+                    return t._id === todo._id;
+                })[0];
+                console.log(filteredItem);
+                var i = todos.indexOf(filteredItem);
+                todos.splice(filteredItem, 1);
+                console.log(todos);
+            }
+        });
     };
     TodosComponent = __decorate([
         core_1.Component({
